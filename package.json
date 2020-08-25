@@ -1,0 +1,54 @@
+{
+  "name": "static-comments",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enable comments for static websites hosted on GitHub",
+  "author": "Alexander Fortin <shaftoe@users.noreply.github.com>",
+  "license": "ISC",
+  "repository": "https://github.com/shaftoe/static-comments.git",
+  "homepage": "https://github.com/shaftoe/static-comments",
+  "bugs": "https://github.com/shaftoe/static-comments/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app",
+    "static",
+    "static-site-generator"
+  ],
+  "scripts": {
+    "dev": "nodemon",
+    "start": "probot run ./index.js",
+    "lint": "standard --fix",
+    "test": "jest && standard",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "probot": "^10.1.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "jest": "^26.4.2",
+    "nock": "^13.0.4",
+    "nodemon": "^2.0.4",
+    "smee-client": "^1.2.2",
+    "standard": "^14.3.4"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "nodemonConfig": {
+    "exec": "npm start",
+    "watch": [
+      ".env",
+      "."
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
