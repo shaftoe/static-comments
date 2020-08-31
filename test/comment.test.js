@@ -1,4 +1,4 @@
-const Comment = require('../comment')
+const Comment = require('../lib/comment')
 
 describe('Comment class', () => {
   test('Comment class with valid input', () => {

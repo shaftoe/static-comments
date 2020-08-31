@@ -5,15 +5,15 @@ const { newPullRequest } = require('./lib/github-utils')
  * This is the main entrypoint of static-comments app
  * @param {import('probot').Application} app
  */
-module.exports = async app => {
+module.exports = app => {
   const router = app.route('/static-comments')
   router.use(require('express').urlencoded({ extended: true }))
 
   router.post('/new', (req, res) => {
     const logMessageAndReturn = (message, code = 200) => {
-      if (code === 200) app.log.info(message.trim())
-      else app.log.error(message.trim())
-      res.status(code).send(message)
+      if (code === 200) app.log.info(message)
+      else app.log.error(message)
+      res.status(code).send(message + '\n')
     }
 
     try {
