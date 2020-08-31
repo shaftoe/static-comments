@@ -3,7 +3,11 @@ const Comment = require('../lib/comment')
 describe('Comment class', () => {
   test('Comment class with valid input', () => {
     const comment = new Comment({
-      config: { repo: 'username/repository-name', path: 'some/folder/path' },
+      config: {
+        repo: 'username/repository-name',
+        path: 'some/folder/path',
+        title: 'Some PR title here'
+      },
       comment: {
         name: 'fancyUser',
         email: 'fake@mail'
@@ -11,7 +15,10 @@ describe('Comment class', () => {
     })
     expect(comment.path).toMatch(/some\/folder\/path\/.*\.json$/)
     expect(comment.repo).toBe('repository-name')
+    expect(comment.ref).toBe('heads/master')
     expect(comment.owner).toBe('username')
+    expect(comment.message).toBe('New comment from static-comments')
+    expect(comment.title).toBe('Some PR title here')
     const content = JSON.parse(comment.content)
     expect(content.id).toMatch(/^[a-z0-9-]+$/)
     expect(content.created).toMatch(new Date().toISOString().slice(0, 16))
