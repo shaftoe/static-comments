@@ -1,0 +1,93 @@
+---
+- hosts: staticcomments
+
+  tasks:
+
+    # https://github.com/nodesource/distributions#deb
+    - name: install NodeSource key
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+
+    - name: install NodeSource distribution
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_14.x buster main
+        state: present
+
+    - name: install nodejs
+      apt:
+        name: nodejs
+        update_cache: yes
+
+    - name: clone repository
+      git:
+        dest: /opt/staticcomments
+        repo: https://github.com/shaftoe/static-comments/
+        force: true
+
+    - name: create staticcomments user
+      user:
+        name: staticcomments
+        home: /opt/staticcomments
+        group: nogroup
+        create_home: no
+        shell: /bin/false
+
+    - name: install staticcomments dependencies
+      npm:
+        production: true
+        path: /opt/staticcomments
+
+    - name: fix staticcomments home permissions
+      file:
+        path: /opt/staticcomments
+        owner: staticcomments
+        group: root
+        mode: '0500'
+
+    - name: add staticcomments .env file
+      copy:
+        src: '.env'
+        dest: /opt/staticcomments/.env
+        mode: '0400'
+        owner: staticcomments
+
+    - name: add staticcomments systemd unit file
+      copy:
+        dest: /etc/systemd/system/staticcomments.service
+        content: |
+          [Unit]
+          Description=static-comments Probot app
+          Documentation=https://github.com/shaftoe/static-comments
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=staticcomments
+          WorkingDirectory=/opt/staticcomments
+          ExecStart=/usr/bin/node ./node_modules/probot/bin/probot.js run ./index.js
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+      notify:
+        - reload systemd
+        - restart probot
+
+    - meta: flush_handlers
+
+    - name: start Probot instance
+      service:
+        name: staticcomments.service
+        enabled: true
+        state: started
+
+  handlers:
+
+    - name: reload systemd
+      command: systemctl daemon-reload
+
+    - name: restart probot
+      service:
+        name: staticcomments.service
+        state: restarted

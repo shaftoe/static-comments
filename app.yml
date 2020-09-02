@@ -4,7 +4,7 @@ default_permissions:
   contents: write
   pull_requests: write
 
-description: Enable comments for static websites hosted on GitHub
+description: Enable comments for static websites with code on GitHub
 
 # Set to true when your GitHub App is available to the public or false when it is only accessible to the owner of the app.
 # Default: true
