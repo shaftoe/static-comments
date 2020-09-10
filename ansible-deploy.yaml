@@ -17,13 +17,18 @@
     - name: install nodejs
       apt:
         name: nodejs
+        state: latest
         update_cache: yes
+      notify:
+        - restart probot
 
     - name: clone repository
       git:
         dest: /opt/staticcomments
         repo: https://github.com/shaftoe/static-comments/
         force: true
+      notify:
+        - restart probot
 
     - name: create staticcomments user
       user:
@@ -37,6 +42,8 @@
       npm:
         production: true
         path: /opt/staticcomments
+      notify:
+        - restart probot
 
     - name: fix staticcomments home permissions
       file:
@@ -51,6 +58,8 @@
         dest: /opt/staticcomments/.env
         mode: '0400'
         owner: staticcomments
+      notify:
+        - restart probot
 
     - name: add staticcomments systemd unit file
       copy:

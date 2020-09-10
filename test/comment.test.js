@@ -72,4 +72,20 @@ describe('Comment class', () => {
       comment: 'some comment'
     })).toThrow(/Comment: Invalid config\[repo\]: wrong-repo/)
   })
+
+  test('Comment keys ending in #md5 have values hashed', () => {
+    const comment = new Comment({
+      config: {
+        repo: 'username/repository-name',
+        path: 'some/folder/path'
+      },
+      comment: {
+        'name#md5': 'fancyUser',
+        'email#md5': 'fake@mail'
+      }
+    })
+    const content = JSON.parse(comment.content)
+    expect(content.comment['name#md5']).toBe('3fcd668d29b949876ec9599ae5b151df')
+    expect(content.comment['email#md5']).toBe('0f7f2f4683d9f7a9b590df1cbd9c125f')
+  })
 })
