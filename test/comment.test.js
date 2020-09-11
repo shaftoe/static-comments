@@ -6,7 +6,8 @@ describe('Comment class', () => {
       config: {
         repo: 'username/repository-name',
         path: 'some/folder/path',
-        title: 'Some PR title here'
+        title: 'Some PR title here',
+        redirect: 'https://some/where'
       },
       comment: {
         name: 'fancyUser',
@@ -19,6 +20,7 @@ describe('Comment class', () => {
     expect(comment.owner).toBe('username')
     expect(comment.message).toBe('New comment from static-comments')
     expect(comment.title).toBe('Some PR title here')
+    expect(comment.redirect).toBe('https://some/where')
     const content = JSON.parse(comment.content)
     expect(content.id).toMatch(/^[a-z0-9-]+$/)
     expect(content.created).toMatch(new Date().toISOString().slice(0, 16))
@@ -81,11 +83,13 @@ describe('Comment class', () => {
       },
       comment: {
         'name#md5': 'fancyUser',
-        'email#md5': 'fake@mail'
+        'email#md5': 'fake@mail',
+        noHash: 'noHashed'
       }
     })
     const content = JSON.parse(comment.content)
     expect(content.comment['name#md5']).toBe('3fcd668d29b949876ec9599ae5b151df')
     expect(content.comment['email#md5']).toBe('0f7f2f4683d9f7a9b590df1cbd9c125f')
+    expect(content.comment.noHash).toBe('noHashed')
   })
 })

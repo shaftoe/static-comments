@@ -10,16 +10,18 @@ module.exports = app => {
   router.use(require('express').urlencoded({ extended: true }))
 
   router.post('/new', (req, res) => {
-    const logMessageAndReturn = (message, code = 200) => {
+    const logMessageAndReturn = (message, code, redirect) => {
       if (code === 200) app.log.info(message)
       else app.log.error(message)
-      res.status(code).send(message + '\n')
+
+      if (redirect) res.redirect(301, redirect)
+      else res.status(code).send(message + '\n')
     }
 
     try {
       const comment = new Comment(req.body)
       newPullRequest(comment, `staticComments-${comment.id}`, app)
-        .then(message => logMessageAndReturn(message))
+        .then(message => logMessageAndReturn(message, 200, comment.redirect))
         .catch(error => logMessageAndReturn(error.message, 400))
     } catch (error) {
       logMessageAndReturn(error.message, 400)
