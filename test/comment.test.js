@@ -14,7 +14,7 @@ describe('Comment class', () => {
         email: 'fake@mail'
       }
     })
-    expect(comment.path).toMatch(/some\/folder\/path\/.*\.json$/)
+    expect(comment.path).toMatch(/some\/folder\/path\/[0-9]+-[0-9a-z-]+\.json$/)
     expect(comment.repo).toBe('repository-name')
     expect(comment.ref).toBe('heads/master')
     expect(comment.owner).toBe('username')
