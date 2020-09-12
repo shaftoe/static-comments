@@ -9,6 +9,8 @@ module.exports = app => {
   const router = app.route('/static-comments')
   router.use(require('express').urlencoded({ extended: true }))
 
+  router.get('/', (_, res) => res.redirect(301, 'https://github.com/shaftoe/static-comments'))
+
   router.post('/new', (req, res) => {
     const logMessageAndReturn = (message, code, redirect) => {
       if (code === 200) app.log.info(message)
