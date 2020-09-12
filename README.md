@@ -35,7 +35,7 @@ The comment content and configuration sent via `POST` are parsed and saved (with
 
 The relevant comment parsing implementation is in the [comment](lib/comment.js) module and everything needed to create a Pull Request with a `comment` object is in the [github-utils](lib/github-utils.js) module.
 
-Here you can see [a real example][hugo] used to enable comments for [my Hugo website](https://a.l3x.in/).
+Here you can see [a real example][hugo-2] used to enable comments for [my Hugo website](https://a.l3x.in/).
 
 ## POST content
 
@@ -45,7 +45,7 @@ The absolute minimum configuration in the POST payload is the following:
 - `config[path]`: the base folder where to create the file for the pull request, e.g. `data/blog/my-blog-entry-title`
 - `content`: any arbitrary (nested or not) data with comment content, e.g. `my simple comment`
 
-NOTE: support for MD5 hashing is offered out of the box (any `content` key ending in `#md5` will have its content hashed in the pull request), which is useful for example if you'd like to store an email address' MD5 hash that can be used to display a Gravatar image: `content[email#md5]=some@email.here`. Check the [provided Hugo example][hugo] for more details.
+NOTE: support for MD5 hashing is offered out of the box (any `content` key ending in `#md5` will have its content hashed in the pull request), which is useful for example if you'd like to store an email address' MD5 hash that can be used to display a Gravatar image: `content[email#md5]=some@email.here`. Check the [provided Hugo example][hugo-1] for more details.
 
 ## Example
 
@@ -66,13 +66,29 @@ This is how a pull request file (`data/somefolder/1599834191610-460f0afb-a0f9-40
 The following command has been used to create the pull request:
 
 ```bash
-http --form POST https://comments.l3x.in/new \
+time http --form POST https://comments.l3x.in/new \
     comment[body]="static-comments is awesome" \
     comment[name]="Alex" \
     comment[email#md5]="<my@real.email>" \
     config[path]="data/somefolder" \
     config[repo]="shaftoe/testing-pr" \
-    config[redirect]="https://a.l3x.in/"`
+    config[redirect]="https://a.l3x.in/"
+
+HTTP/1.1 301 Moved Permanently
+Connection: keep-alive
+Content-Length: 52
+Content-Type: text/plain; charset=utf-8
+Date: Fri, 11 Sep 2020 14:23:20 GMT
+Keep-Alive: timeout=5
+Location: https://a.l3x.in/
+Vary: Accept
+X-Powered-By: Express
+
+Moved Permanently. Redirecting to https://a.l3x.in/
+
+real 0m10.336s
+user 0m0.561s
+sys 0m0.173s
 ```
 
 ## Credits
@@ -83,7 +99,8 @@ This project has been heavily inspired by [Staticman](https://staticman.net). `s
 
 [Pull requests][pull-requests] are welcome.
 
-You can also send me a message from my [contact page][contact-page] or probably find me hanging out in the [Probot Slack channel](https://probot-slackin.herokuapp.com/).
+You can also send me a message from my [contact page](https://a.l3x.in/contact) or probably find me hanging out in the [Probot Slack channel](https://probot-slackin.herokuapp.com/).
 
-[hugo]: https://github.com/shaftoe/personal-website/blob/master/layouts/partials/comments-form.html#L41
+[hugo-1]: https://github.com/shaftoe/personal-website/blob/master/layouts/partials/comments-form.html#L16
+[hugo-2]: https://github.com/shaftoe/personal-website/blob/master/layouts/partials/comments-form.html#L41
 [pull-requests]: <https://github.com/shaftoe/static-comments/pull/new/master>
