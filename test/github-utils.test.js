@@ -2,7 +2,7 @@ const nock = require('nock')
 const { Probot } = require('probot')
 // actual implementation
 const staticComments = require('..')
-const { newPullRequest } = require('../lib/github-utils')
+const { newPullRequest, GithubError } = require('../lib/github-utils')
 const { Comment } = require('../lib/comment')
 // fixtures
 const fs = require('fs')
@@ -13,6 +13,13 @@ describe('github-utils module', () => {
   let mockCert
   let probot
   let app
+  const comment = new Comment({
+    config: {
+      path: 'data/somefolder',
+      repo: 'shaftoe/testing-pr'
+    },
+    comment: 'some'
+  })
 
   beforeAll((done) => {
     fs.readFile(path.join(__dirname, 'fixtures/mock-cert.pem'), (err, cert) => {
@@ -62,21 +69,23 @@ describe('github-utils module', () => {
       .post('/repos/shaftoe/testing-pr/pulls')
       .reply(201, fixtures['/repos/shaftoe/testing-pr/pulls'])
 
-    const result = await newPullRequest(
-      new Comment({
-        config: {
-          path: 'data/somefolder',
-          repo: 'shaftoe/testing-pr'
-        },
-        comment: 'some'
-      }),
-      '74748e21-0252-41bb-bfb9-82fd7600147f',
-      app
-    )
+    const result = await newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', app)
 
     expect(result).toBe(
       'New pull request https://github.com/shaftoe/testing-pr/pull/19 created'
     )
+  })
+
+  it('throws GithubError', async () => {
+    nock('https://api.github.com:443', {
+      encodedQueryParams: true
+    })
+      .get('/app/installations')
+      .reply(200, [])
+
+    await expect(() => newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', app))
+      .rejects
+      .toThrow(GithubError)
   })
 
   afterEach(() => {
