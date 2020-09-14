@@ -3,7 +3,7 @@ const { Probot } = require('probot')
 // actual implementation
 const staticComments = require('..')
 const { newPullRequest } = require('../lib/github-utils')
-const Comment = require('../lib/comment')
+const { Comment } = require('../lib/comment')
 // fixtures
 const fs = require('fs')
 const path = require('path')

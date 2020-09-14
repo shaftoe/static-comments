@@ -1,5 +1,5 @@
-const Comment = require('./lib/comment')
-const { newPullRequest } = require('./lib/github-utils')
+const { Comment, CommentError } = require('./lib/comment')
+const { newPullRequest, GithubError } = require('./lib/github-utils')
 
 /**
  * This is the main entrypoint of static-comments app
@@ -24,7 +24,8 @@ module.exports = app => {
         .then(message => logMessageAndReturn(message, 200, comment.redirect))
         .catch(error => logMessageAndReturn(error.message, 400))
     } catch (error) {
-      logMessageAndReturn(error.message, 400)
+      if (error instanceof GithubError || error instanceof CommentError) logMessageAndReturn(error.message, 400)
+      else logMessageAndReturn(error.message, 500)
     }
   })
 

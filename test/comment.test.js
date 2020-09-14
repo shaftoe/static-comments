@@ -1,4 +1,4 @@
-const Comment = require('../lib/comment')
+const { Comment, CommentError } = require('../lib/comment')
 
 describe('Comment class', () => {
   test('Comment class with valid input', () => {
@@ -31,6 +31,7 @@ describe('Comment class', () => {
   })
 
   test('Comment constructor throws with invalid/missing argument', () => {
+    expect(() => new Comment()).toThrow(CommentError)
     expect(() => new Comment()).toThrow(/Comment: Missing `config` in payload/)
     expect(() => new Comment({})).toThrow(
       /Comment: Missing `config` in payload/
