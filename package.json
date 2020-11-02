@@ -23,7 +23,7 @@
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
-    "probot": "^10.9.4",
+    "probot": "^10.10.1",
     "uuid": "^8.3.1"
   },
   "devDependencies": {
@@ -31,7 +31,7 @@
     "nock": "^13.0.4",
     "nodemon": "^2.0.6",
     "smee-client": "^1.2.2",
-    "standard": "^15.0.0"
+    "standard": "^16.0.1"
   },
   "engines": {
     "node": ">= 8.3.0"
