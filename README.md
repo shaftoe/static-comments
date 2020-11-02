@@ -45,6 +45,13 @@ The absolute minimum configuration in the POST payload is the following:
 - `config[path]`: the base folder where to create the file for the pull request, e.g. `data/blog/my-blog-entry-title`
 - `content`: any arbitrary (nested or not) data with comment content, e.g. `my simple comment`
 
+If you want to add spam filtering support via Akismet you need to populate the `akismet` key with some parameters, e.g:
+
+- `akismet[key]`: the Akismet developer API key
+- `akismet[blog]`: the blog address
+
+Refer to the [official Akismet documentation](https://akismet.com/development/api/#comment-check) for all the non-mandatory parameters you can add to the `akismet` config key.
+
 NOTE: support for MD5 hashing is offered out of the box (any `content` key ending in `#md5` will have its content hashed in the pull request), which is useful for example if you'd like to store an email address' MD5 hash that can be used to display a Gravatar image: `content[email#md5]=some@email.here`. Check the [provided Hugo example][hugo-1] for more details.
 
 ## Example

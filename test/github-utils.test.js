@@ -36,7 +36,7 @@ describe('github-utils module', () => {
     app = probot.load(staticComments)
   })
 
-  test('newPullRequest creates all needed resources on GitHub', async () => {
+  it('newPullRequest creates all needed resources on GitHub', async () => {
     nock('https://api.github.com:443', {
       encodedQueryParams: true
     })
