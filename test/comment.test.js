@@ -23,11 +23,10 @@ describe('Comment class', () => {
     expect(comment.message).toBe('New comment from static-comments')
     expect(comment.title).toBe('Some PR title here')
     expect(comment.redirect).toBe('https://some/where')
-    const content = JSON.parse(comment.content)
-    expect(content.id).toMatch(/^[a-z0-9-]+$/)
-    expect(content.created).toMatch(new Date().toISOString().slice(0, 16))
-    expect(content.comment.name).toBe('fancyUser')
-    expect(content.comment.email).toBe('fake@mail')
+    expect(comment.content.id).toMatch(/^[a-z0-9-]+$/)
+    expect(comment.content.created).toMatch(new Date().toISOString().slice(0, 16))
+    expect(comment.content.comment.name).toBe('fancyUser')
+    expect(comment.content.comment.email).toBe('fake@mail')
   })
 
   test('Comment constructor throws with invalid/missing argument', () => {
@@ -112,13 +111,12 @@ describe('Comment class', () => {
         noHash: 'noHashed'
       }
     })
-    const content = JSON.parse(comment.content)
-    expect(content.comment['name#md5']).toBe(
+    expect(comment.content.comment['name#md5']).toBe(
       '3fcd668d29b949876ec9599ae5b151df'
     )
-    expect(content.comment['email#md5']).toBe(
+    expect(comment.content.comment['email#md5']).toBe(
       '0f7f2f4683d9f7a9b590df1cbd9c125f'
     )
-    expect(content.comment.noHash).toBe('noHashed')
+    expect(comment.content.comment.noHash).toBe('noHashed')
   })
 })
