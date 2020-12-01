@@ -4,7 +4,7 @@ run:
 update:
 	@ncu -u
 
-apply:
+deploy:
 	@ansible-playbook -i ~/ansible2/hosts ansible-deploy.yaml
 
 tests:
