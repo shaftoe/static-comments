@@ -6,8 +6,8 @@ const { spamCheck, SpamError } = require('./lib/spam-filter')
  * This is the main entrypoint of static-comments app
  * @param {import('probot').Application} app
  */
-module.exports = app => {
-  const router = app.route('/static-comments')
+module.exports = ({ app, getRouter }) => {
+  const router = getRouter('/static-comments')
   router.use(require('express').urlencoded({ extended: true }))
 
   router.post('/new', (req, res) => {
