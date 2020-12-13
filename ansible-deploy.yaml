@@ -74,7 +74,7 @@
           Type=simple
           User=staticcomments
           WorkingDirectory=/opt/staticcomments
-          ExecStart=/usr/bin/node ./node_modules/probot/bin/probot.js run ./index.js
+          ExecStart=/usr/bin/node server.js
           Restart=on-failure
 
           [Install]
