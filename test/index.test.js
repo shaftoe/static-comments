@@ -1,33 +1,32 @@
 const nock = require('nock')
 // Requiring our app implementation
-const myProbotApp = require('..')
-const { Probot } = require('probot')
+const myProbotApp = require('../app')
+const { Probot, Server, ProbotOctokit } = require('probot')
 // Requiring our fixtures
 const payload = require('./fixtures/issues.opened')
 const issueCreatedBody = { body: 'Thanks for opening this issue!' }
-const fs = require('fs')
-const path = require('path')
 
 describe('My Probot app', () => {
-  let probot
-  let mockCert
+  let server
 
-  beforeAll((done) => {
-    fs.readFile(path.join(__dirname, 'fixtures/mock-cert.pem'), (err, cert) => {
-      if (err) return done(err)
-      mockCert = cert
-      done()
-    })
-  })
-
-  beforeEach(() => {
+  beforeEach(async () => {
     nock.disableNetConnect()
-    probot = new Probot({ id: 123, privateKey: mockCert })
-    // Load our app into probot
-    probot.load(myProbotApp)
+
+    // create server instance
+    server = new Server({
+      Probot: Probot.defaults({
+        id: 123,
+        Octokit: ProbotOctokit.defaults({
+          retry: { enabled: false },
+          throttle: { enabled: false }
+        })
+      })
+    })
+
+    await server.load(myProbotApp)
   })
 
-  test('creates a comment when an issue is opened', async () => {
+  test('creates a passing check', async () => {
     // Test that we correctly return a test token
     nock('https://api.github.com')
       .post('/app/installations/2/access_tokens')
@@ -42,7 +41,7 @@ describe('My Probot app', () => {
       .reply(200)
 
     // Receive a webhook event
-    await probot.receive({ name: 'issues', payload })
+    await server.probotApp.receive({ name: 'issues', payload })
   })
 
   afterEach(() => {
@@ -50,9 +49,3 @@ describe('My Probot app', () => {
     nock.enableNetConnect()
   })
 })
-
-// For more information about testing with Jest see:
-// https://facebook.github.io/jest/
-
-// For more information about testing with Nock see:
-// https://github.com/nock/nock

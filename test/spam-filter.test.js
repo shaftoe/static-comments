@@ -1,7 +1,7 @@
 const nock = require('nock')
-const { Probot } = require('probot')
+const { Probot, Server, ProbotOctokit } = require('probot')
 // actual implementation
-const staticComments = require('..')
+const staticComments = require('../app')
 const { spamCheck, SpamError } = require('../lib/spam-filter')
 const { Comment } = require('../lib/comment')
 // fixtures
@@ -10,8 +10,7 @@ const path = require('path')
 
 describe('spam-filter module', () => {
   let mockCert
-  let probot
-  let app
+  let server
   let comment
   const akismetKey = 'fake'
   const akismetBlog = 'https://fake.blog/'
@@ -24,11 +23,7 @@ describe('spam-filter module', () => {
     })
   })
 
-  beforeEach(() => {
-    nock.disableNetConnect()
-    probot = new Probot({ id: 123, privateKey: mockCert })
-    // Load our app into probot
-    app = probot.load(staticComments)
+  beforeEach(async () => {
     comment = new Comment({
       config: {
         path: 'data/somefolder',
@@ -37,6 +32,20 @@ describe('spam-filter module', () => {
       comment: 'some',
       akismet: { key: akismetKey, blog: akismetBlog }
     })
+
+    // create server instance
+    server = new Server({
+      Probot: Probot.defaults({
+        id: 123,
+        Octokit: ProbotOctokit.defaults({
+          privateKey: mockCert,
+          retry: { enabled: false },
+          throttle: { enabled: false }
+        })
+      })
+    })
+
+    await server.load(staticComments)
   })
 
   test('spamCheck returns input comment if content is HAM', async () => {
@@ -46,14 +55,14 @@ describe('spam-filter module', () => {
       .post('/1.1/comment-check')
       .reply(200, 'false')
 
-    const result = await spamCheck(comment, '127.0.0.1', app)
+    const result = await spamCheck(comment, '127.0.0.1', server.probotApp)
 
     expect(result).toBe(comment)
   })
 
   test('spamCheck returns input comment if spam filter (Akismet) is not configured', async () => {
     comment.akismet = undefined
-    const result = await spamCheck(comment, '127.0.0.1', app)
+    const result = await spamCheck(comment, '127.0.0.1', server.probotApp)
     expect(result).toBe(comment)
   })
 
@@ -68,7 +77,7 @@ describe('spam-filter module', () => {
     comment.akismet.authorKey = 'name'
     comment.akismet.contentKey = 'body'
 
-    const result = await spamCheck(comment, '127.0.0.1', app)
+    const result = await spamCheck(comment, '127.0.0.1', server.probotApp)
     expect(result.akismet).toEqual({
       blog: akismetBlog,
       comment_author: 'fake name',
@@ -80,14 +89,14 @@ describe('spam-filter module', () => {
 
   test('spamCheck throws error if `blog` is missing in Akismet config', async () => {
     comment.akismet.blog = undefined
-    await expect(() => spamCheck(comment, '127.0.0.1', app))
+    await expect(() => spamCheck(comment, '127.0.0.1', server.probotApp))
       .rejects
       .toThrow(SpamError)
   })
 
   test('spamCheck throws error if `key` is missing in Akismet config', async () => {
     comment.akismet.key = undefined
-    await expect(() => spamCheck(comment, '127.0.0.1', app))
+    await expect(() => spamCheck(comment, '127.0.0.1', server.probotApp))
       .rejects
       .toThrow(SpamError)
   })
@@ -99,7 +108,7 @@ describe('spam-filter module', () => {
       .post('/1.1/comment-check')
       .reply(200, 'true')
 
-    await expect(() => spamCheck(comment, '127.0.0.1', app))
+    await expect(() => spamCheck(comment, '127.0.0.1', server.probotApp))
       .rejects
       .toThrow(SpamError)
   })

@@ -1,7 +1,7 @@
 const nock = require('nock')
-const { Probot } = require('probot')
+const { Probot, Server, ProbotOctokit } = require('probot')
 // actual implementation
-const staticComments = require('..')
+const staticComments = require('../app')
 const { newPullRequest, GithubError } = require('../lib/github-utils')
 const { Comment } = require('../lib/comment')
 // fixtures
@@ -11,8 +11,7 @@ const fixtures = require('./fixtures/github')
 
 describe('github-utils module', () => {
   let mockCert
-  let probot
-  let app
+  let server
   const comment = new Comment({
     config: {
       path: 'data/somefolder',
@@ -29,11 +28,22 @@ describe('github-utils module', () => {
     })
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     nock.disableNetConnect()
-    probot = new Probot({ id: 123, privateKey: mockCert })
-    // Load our app into probot
-    app = probot.load(staticComments)
+
+    server = new Server({
+      Probot: Probot.defaults({
+        id: 123,
+        githubToken: 'test', // ref: https://github.com/probot/probot/issues/1452#issuecomment-752222670
+        Octokit: ProbotOctokit.defaults({
+          privateKey: mockCert,
+          retry: { enabled: false },
+          throttle: { enabled: false }
+        })
+      })
+    })
+
+    await server.load(staticComments)
   })
 
   it('newPullRequest creates all needed resources on GitHub', async () => {
@@ -44,10 +54,10 @@ describe('github-utils module', () => {
       .reply(200, ...fixtures['/app/installations'])
       .post('/app/installations/11553724/access_tokens', {})
       .reply(201, fixtures['/app/installations/11553724/access_tokens'])
-      .get('/repos/shaftoe/testing-pr/git/refs/heads%2Fmaster')
+      .get('/repos/shaftoe/testing-pr/git/ref/heads%2Fmaster')
       .reply(
         200,
-        ...fixtures['/repos/shaftoe/testing-pr/git/refs/heads%2Fmaster']
+        ...fixtures['/repos/shaftoe/testing-pr/git/ref/heads%2Fmaster']
       )
       .get(
         '/repos/shaftoe/testing-pr/git/trees/5baeb51466b0d77e6a333d0db4c27efcad143bee'
@@ -69,7 +79,7 @@ describe('github-utils module', () => {
       .post('/repos/shaftoe/testing-pr/pulls')
       .reply(201, fixtures['/repos/shaftoe/testing-pr/pulls'])
 
-    const result = await newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', app)
+    const result = await newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', server.probotApp)
 
     expect(result).toBe(
       'New pull request https://github.com/shaftoe/testing-pr/pull/19 created'
@@ -83,7 +93,7 @@ describe('github-utils module', () => {
       .get('/app/installations')
       .reply(200, [])
 
-    await expect(() => newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', app))
+    await expect(() => newPullRequest(comment, '74748e21-0252-41bb-bfb9-82fd7600147f', server.probotApp))
       .rejects
       .toThrow(GithubError)
   })

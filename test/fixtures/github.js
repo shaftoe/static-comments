@@ -61,7 +61,7 @@ module.exports = {
     },
     repository_selection: 'selected'
   },
-  '/repos/shaftoe/testing-pr/git/refs/heads%2Fmaster': [
+  '/repos/shaftoe/testing-pr/git/ref/heads%2Fmaster': [
     [
       '1f8b0800000000000003a58ecd6ac3301084df45e736ebc48e0d3e87a404444e752197a29f75a434b284b409b821efde2d3df652e8655998f966e62e328ea2ffbe051c2a5b20a84298c59398a2c5776f59951bd9be8621c8f3c7cc7f2537',
       '667598f697e3246f6a37b8e38bbce9b7eda7dd0d3383d77c61c811a5d203a8e417274feeaa172606c8986281e2d4481181b0909f4ecf29037b58fc3d23ea331a12fd5d30c4b96bad50af974ddbeaca761db6aaae6b5b59dd985587a35176d9d41a9187d09c9009ae0d9efe35ec27a2c09fcb1f8f2f1b97aa895b010000'

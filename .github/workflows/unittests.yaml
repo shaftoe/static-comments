@@ -1,0 +1,14 @@
+name: unit tests
+on: [push, pull_request]
+jobs:
+  unittests:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: make install
+      - name: Show versions
+        run: make versions
+      - name: Run tests
+        run: make tests
+    runs-on: ubuntu-latest
