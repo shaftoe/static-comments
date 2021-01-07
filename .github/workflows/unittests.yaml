@@ -5,12 +5,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Create fake Makefile config file
+        run: touch config.mk
       - name: Install Dependencies
         run: make install
       - name: Show versions
         run: make versions
-      - name: Create fake config file
-        run: touch config.mk
       - name: Run tests
         run: make tests
     runs-on: ubuntu-latest
