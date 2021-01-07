@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
     "probot": "^11.0.1",
     "uuid": "^8.3.2"
   },

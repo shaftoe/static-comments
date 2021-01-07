@@ -1,7 +1,8 @@
 const { Server, Probot } = require('probot')
-const { env } = require('process')
 const app = require('./app')
 
+require('dotenv').config()
+const { env } = process
 const appId = env.APP_ID
 const privateKey = env.PRIVATE_KEY
 const secret = env.WEBHOOK_SECRET
