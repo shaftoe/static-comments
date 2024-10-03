@@ -11,10 +11,10 @@ module.exports = (app, { getRouter }) => {
   router.use(require('express').urlencoded({ extended: true }))
 
   router.post('/new', (req, res) => {
-    app.log.info(`Processing new request from IP ${req.ip}`)
+    app.log.debug(`Processing new request from IP ${req.ip}`)
 
     const logMessageAndReturn = (message, code, redirect) => {
-      if (code === 200) app.log.info(message)
+      if (code === 200) app.log.debug(message)
       else app.log.error(message)
 
       if (redirect) res.redirect(301, redirect)
