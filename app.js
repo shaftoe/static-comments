@@ -14,7 +14,7 @@ module.exports = (app, { getRouter }) => {
     app.log.debug(`Processing new request from IP ${req.ip}`)
 
     const logMessageAndReturn = (message, code, redirect) => {
-      if (code === 200) app.log.debug(message)
+      if (code === 200 || code === 400) app.log.debug(message)
       else app.log.error(message)
 
       if (redirect) res.redirect(301, redirect)
@@ -22,7 +22,8 @@ module.exports = (app, { getRouter }) => {
     }
 
     const handleError = error => {
-      if (error instanceof GithubError || error instanceof CommentError || error instanceof SpamError) logMessageAndReturn(error.message, 400)
+      if (error instanceof GithubError || error instanceof CommentError) logMessageAndReturn(error.message, 502)
+      else if (error instanceof SpamError) logMessageAndReturn(error.message, 400)
       else logMessageAndReturn(error.message, 500)
     }
 
